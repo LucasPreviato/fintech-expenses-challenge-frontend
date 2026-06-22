@@ -5,8 +5,8 @@ export function IndexPage() {
   const { isAuthenticated, isBootstrapping } = useAuth();
 
   if (isBootstrapping) {
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
-  return <Navigate to={isAuthenticated ? '/dashboard' : '/login'} />;
+  return <Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />;
 }
