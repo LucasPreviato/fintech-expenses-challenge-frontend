@@ -18,7 +18,6 @@ interface TransactionsListProps {
   transactions: Transaction[];
   paginationMeta?: PaginationMeta;
   deletingTransactionId?: string;
-  feedbackMessage?: string;
   listErrorMessage?: string;
   hasActiveFilters: boolean;
   onEdit: (transaction: Transaction) => void;
@@ -50,7 +49,6 @@ export function TransactionsList({
   transactions,
   paginationMeta,
   deletingTransactionId,
-  feedbackMessage,
   listErrorMessage,
   hasActiveFilters,
   onEdit,
@@ -70,9 +68,6 @@ export function TransactionsList({
 
       <CardContent className="space-y-4">
         <FieldError message={listErrorMessage} />
-        {feedbackMessage ? (
-          <p className="text-sm text-primary">{feedbackMessage}</p>
-        ) : null}
 
         {transactions.length === 0 ? (
           <EmptyState

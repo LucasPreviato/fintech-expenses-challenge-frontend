@@ -1,27 +1,31 @@
 import {
-  createCategory,
   categoriesQueryKey,
+  createCategory,
   deleteCategory,
   listCategories,
   updateCategory,
 } from '@/features/categories/api/categories-api';
 import {
+  type CategoryFormValues,
   categoryFormSchema,
   emptyCategoryFormValues,
-  type CategoryFormValues,
 } from '@/features/categories/lib/category-schemas';
 import type {
   Category,
   CategorySuggestion,
 } from '@/features/categories/types/category';
 import { getApiErrorMessage } from '@/lib/api/client';
+import { useToast } from '@/providers/toast-context';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 export function useCategoriesPage() {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  const [categoryPendingDelete, setCategoryPendingDelete] =
+    useState<Category | null>(null);
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categoryFormSchema),
     defaultValues: emptyCategoryFormValues,
@@ -58,15 +62,6 @@ export function useCategoriesPage() {
       ),
     [categories],
   );
-
-  const feedbackMessage =
-    updateCategoryMutation.isSuccess
-      ? 'Categoria atualizada com sucesso.'
-      : createCategoryMutation.isSuccess
-        ? 'Categoria criada com sucesso.'
-        : deleteCategoryMutation.isSuccess
-          ? 'Categoria excluida com sucesso.'
-          : undefined;
 
   const listErrorMessage = categoriesQuery.isError
     ? getApiErrorMessage(
@@ -112,20 +107,40 @@ export function useCategoriesPage() {
           id: values.categoryId,
           values: payload,
         });
+        showToast({
+          type: 'success',
+          title: 'Categoria atualizada',
+          message: 'As alteracoes foram salvas com sucesso.',
+        });
       } else {
         await createCategoryMutation.mutateAsync(payload);
+        showToast({
+          type: 'success',
+          title: 'Categoria criada',
+          message: 'A nova categoria ja esta disponivel para uso.',
+        });
       }
 
       resetForm();
       await refreshCategories();
     } catch (error) {
+      const message = getApiErrorMessage(
+        error,
+        values.categoryId
+          ? 'Nao foi possivel atualizar a categoria agora.'
+          : 'Nao foi possivel criar a categoria agora.',
+      );
+
+      showToast({
+        type: 'error',
+        title: values.categoryId
+          ? 'Falha ao atualizar categoria'
+          : 'Falha ao criar categoria',
+        message,
+      });
+
       form.setError('root', {
-        message: getApiErrorMessage(
-          error,
-          values.categoryId
-            ? 'Nao foi possivel atualizar a categoria agora.'
-            : 'Nao foi possivel criar a categoria agora.',
-        ),
+        message,
       });
     }
   });
@@ -153,7 +168,26 @@ export function useCategoriesPage() {
     });
   }
 
-  async function handleDelete(category: Category) {
+  function handleRequestDelete(category: Category) {
+    resetMutationFeedback();
+    setCategoryPendingDelete(category);
+  }
+
+  function handleCancelDelete() {
+    if (deleteCategoryMutation.isPending) {
+      return;
+    }
+
+    setCategoryPendingDelete(null);
+  }
+
+  async function handleConfirmDelete() {
+    const category = categoryPendingDelete;
+
+    if (!category) {
+      return;
+    }
+
     resetMutationFeedback();
     form.clearErrors('root');
 
@@ -165,8 +199,21 @@ export function useCategoriesPage() {
       }
 
       await refreshCategories();
-    } catch {
-      // Error feedback is rendered from the mutation state.
+      showToast({
+        type: 'success',
+        title: 'Categoria excluida',
+        message: `"${category.name}" foi removida com sucesso.`,
+      });
+      setCategoryPendingDelete(null);
+    } catch (error) {
+      showToast({
+        type: 'error',
+        title: 'Falha ao excluir categoria',
+        message: getApiErrorMessage(
+          error,
+          'Nao foi possivel excluir a categoria agora.',
+        ),
+      });
     }
   }
 
@@ -183,17 +230,17 @@ export function useCategoriesPage() {
     isSubmitting:
       createCategoryMutation.isPending || updateCategoryMutation.isPending,
     deletingCategoryId: deleteCategoryMutation.variables?.id,
-    feedbackMessage,
     listErrorMessage,
     addedSuggestionNames,
-    showFormSuccess:
-      createCategoryMutation.isSuccess || updateCategoryMutation.isSuccess,
-    showDeleteSuccess: deleteCategoryMutation.isSuccess,
     onSubmit,
     onSuggestionSelect: handleSuggestionSelect,
     onEdit: handleEdit,
-    onDelete: handleDelete,
+    onDelete: handleRequestDelete,
     onCancelEdit: handleCancelEdit,
+    categoryPendingDelete,
+    isConfirmingDelete: deleteCategoryMutation.isPending,
+    onCancelDelete: handleCancelDelete,
+    onConfirmDelete: handleConfirmDelete,
     refetch: categoriesQuery.refetch,
     hasQueryError: categoriesQuery.isError,
   };

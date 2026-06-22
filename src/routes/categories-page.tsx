@@ -1,9 +1,10 @@
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { FieldError } from '@/components/ui/field-error';
 import { CategoriesList } from '@/features/categories/components/categories-list';
 import { CategoriesLoadingState } from '@/features/categories/components/categories-loading-state';
-import { CategoryForm } from '@/features/categories/components/category-form';
 import { CategoriesRetryCard } from '@/features/categories/components/categories-retry-card';
+import { CategoryForm } from '@/features/categories/components/category-form';
 import { useCategoriesPage } from '@/features/categories/hooks/use-categories-page';
 import { categorySuggestions } from '@/features/categories/lib/category-suggestions';
 
@@ -15,16 +16,17 @@ export function CategoriesPage() {
     isLoading,
     isSubmitting,
     deletingCategoryId,
-    feedbackMessage,
     listErrorMessage,
     addedSuggestionNames,
-    showFormSuccess,
-    showDeleteSuccess,
+    categoryPendingDelete,
+    isConfirmingDelete,
     onSubmit,
     onSuggestionSelect,
     onEdit,
     onDelete,
     onCancelEdit,
+    onCancelDelete,
+    onConfirmDelete,
     refetch,
     hasQueryError,
   } = useCategoriesPage();
@@ -53,7 +55,6 @@ export function CategoriesPage() {
         onCancelEdit={onCancelEdit}
         onSubmit={onSubmit}
         onSuggestionSelect={onSuggestionSelect}
-        successMessage={showFormSuccess ? feedbackMessage : undefined}
         suggestions={categorySuggestions}
       />
 
@@ -65,7 +66,6 @@ export function CategoriesPage() {
           <CategoriesList
             categories={categories}
             deletingCategoryId={deletingCategoryId}
-            feedbackMessage={showDeleteSuccess ? feedbackMessage : undefined}
             onDelete={onDelete}
             onEdit={onEdit}
           />
@@ -75,6 +75,21 @@ export function CategoriesPage() {
       {hasQueryError ? (
         <CategoriesRetryCard onRetry={() => void refetch()} />
       ) : null}
+
+      <ConfirmDialog
+        cancelLabel="Voltar"
+        confirmLabel="Excluir categoria"
+        description={
+          categoryPendingDelete
+            ? `A categoria "${categoryPendingDelete.name}" sera removida permanentemente.`
+            : ''
+        }
+        isLoading={isConfirmingDelete}
+        onCancel={onCancelDelete}
+        onConfirm={() => void onConfirmDelete()}
+        open={Boolean(categoryPendingDelete)}
+        title="Confirmar exclusao"
+      />
     </div>
   );
 }

@@ -47,7 +47,9 @@ export function LoginForm() {
     <Card>
       <CardHeader>
         <CardTitle>Entrar</CardTitle>
-        <CardDescription>Use sua conta para acessar a plataforma.</CardDescription>
+        <CardDescription>
+          Use sua conta para acessar a plataforma.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4" onSubmit={onSubmit}>

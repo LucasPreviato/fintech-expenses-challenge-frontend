@@ -1,56 +1,69 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { EmptyState } from '@/components/ui/empty-state';
-
-const summaryCards = [
-  { label: 'Saldo atual', value: 'R$ 0,00' },
-  { label: 'Entradas', value: 'R$ 0,00' },
-  { label: 'Saidas', value: 'R$ 0,00' },
-] as const;
+import { DashboardFilters } from '@/features/dashboard/components/dashboard-filters';
+import { DashboardLoadingState } from '@/features/dashboard/components/dashboard-loading-state';
+import { DashboardRetryCard } from '@/features/dashboard/components/dashboard-retry-card';
+import { DashboardSummaryCards } from '@/features/dashboard/components/dashboard-summary-cards';
+import { DashboardTopExpenseCategories } from '@/features/dashboard/components/dashboard-top-expense-categories';
+import { useDashboardPage } from '@/features/dashboard/hooks/use-dashboard-page';
+import { formatPeriodLabel } from '@/features/dashboard/lib/dashboard-formatters';
 
 export function DashboardPage() {
+  const {
+    form,
+    dashboard,
+    isLoading,
+    isApplyingFilters,
+    hasActiveFilters,
+    errorMessage,
+    onApplyFilters,
+    onClearFilters,
+    onRetry,
+  } = useDashboardPage();
+
+  const periodLabel = formatPeriodLabel(
+    dashboard?.period.startDate,
+    dashboard?.period.endDate,
+  );
+
   return (
     <div className="space-y-6">
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <p className="text-sm text-muted">
-          Estrutura inicial pronta para receber os indicadores consolidados da
-          API.
+          Acompanhe o saldo consolidado, compare entradas e saidas e veja onde
+          estao concentradas as maiores despesas.
         </p>
       </div>
 
-      <section className="grid gap-4 md:grid-cols-3">
-        {summaryCards.map((card) => (
-          <Card key={card.label}>
-            <CardHeader className="pb-3">
-              <CardDescription>{card.label}</CardDescription>
-              <CardTitle className="text-2xl">{card.value}</CardTitle>
-            </CardHeader>
-          </Card>
-        ))}
-      </section>
+      <DashboardFilters
+        form={form}
+        hasActiveFilters={hasActiveFilters}
+        isApplyingFilters={isApplyingFilters}
+        onApplyFilters={onApplyFilters}
+        onClearFilters={onClearFilters}
+      />
 
-      <section>
-        <Card>
-          <CardHeader>
-            <CardTitle>Top categorias de saida</CardTitle>
-            <CardDescription>
-              Este bloco vai consumir o resumo calculado pela API.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <EmptyState
-              description="Assim que o backend expor o endpoint do dashboard, este painel pode mostrar as tres categorias com maior volume de saida."
-              title="Sem dados ainda"
-            />
-          </CardContent>
-        </Card>
-      </section>
+      {errorMessage ? (
+        <DashboardRetryCard
+          message={errorMessage}
+          onRetry={() => void onRetry()}
+        />
+      ) : null}
+
+      {isLoading ? (
+        <DashboardLoadingState />
+      ) : dashboard ? (
+        <div className="space-y-6">
+          <div className="rounded-lg border bg-card px-4 py-3 text-sm text-muted">
+            Periodo analisado:{' '}
+            <span className="font-medium text-foreground">{periodLabel}</span>
+          </div>
+
+          <DashboardSummaryCards dashboard={dashboard} />
+          <DashboardTopExpenseCategories
+            categories={dashboard.topExpenseCategories}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

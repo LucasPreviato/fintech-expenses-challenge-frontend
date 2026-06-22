@@ -1,10 +1,10 @@
-import { apiClient } from '@/lib/api/client';
 import type {
   AuthResponse,
   LoginRequest,
   RegisterRequest,
 } from '@/features/auth/types/auth-api';
 import type { AppUser } from '@/features/auth/types/session';
+import { apiClient } from '@/lib/api/client';
 
 export async function login(payload: LoginRequest): Promise<AuthResponse> {
   const response = await apiClient.post<AuthResponse>('/auth/login', payload);
@@ -15,7 +15,10 @@ export async function login(payload: LoginRequest): Promise<AuthResponse> {
 export async function register(
   payload: RegisterRequest,
 ): Promise<AuthResponse> {
-  const response = await apiClient.post<AuthResponse>('/auth/register', payload);
+  const response = await apiClient.post<AuthResponse>(
+    '/auth/register',
+    payload,
+  );
 
   return response.data;
 }

@@ -3,9 +3,10 @@ import {
   listCategories,
 } from '@/features/categories/api/categories-api';
 import { getApiErrorMessage } from '@/lib/api/client';
+import { useToast } from '@/providers/toast-context';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   buildTransactionsQueryKey,
@@ -62,9 +63,15 @@ function hasActiveFilters(filters: TransactionFilters) {
 
 export function useTransactionsPage() {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   const [appliedFilters, setAppliedFilters] = useState<TransactionFilters>(
     createDefaultFilters(),
   );
+  const [transactionPendingDelete, setTransactionPendingDelete] =
+    useState<Transaction | null>(null);
+  const [pendingFilterToastMessage, setPendingFilterToastMessage] = useState<
+    string | null
+  >(null);
 
   const form = useForm<TransactionFormValues>({
     resolver: zodResolver(transactionFormSchema),
@@ -110,14 +117,6 @@ export function useTransactionsPage() {
   const paginationMeta = transactionsQuery.data?.meta;
   const isEditing = Boolean(form.watch('transactionId'));
 
-  const feedbackMessage = updateTransactionMutation.isSuccess
-    ? 'Transacao atualizada com sucesso.'
-    : createTransactionMutation.isSuccess
-      ? 'Transacao criada com sucesso.'
-      : deleteTransactionMutation.isSuccess
-        ? 'Transacao excluida com sucesso.'
-        : undefined;
-
   const listErrorMessage = transactionsQuery.isError
     ? getApiErrorMessage(
         transactionsQuery.error,
@@ -154,6 +153,48 @@ export function useTransactionsPage() {
     });
   }
 
+  useEffect(() => {
+    if (!pendingFilterToastMessage || transactionsQuery.isFetching) {
+      return;
+    }
+
+    if (transactionsQuery.isError) {
+      showToast({
+        type: 'error',
+        title: 'Falha ao aplicar filtros',
+        message: getApiErrorMessage(
+          transactionsQuery.error,
+          'Nao foi possivel atualizar a listagem com os filtros informados.',
+        ),
+      });
+      setPendingFilterToastMessage(null);
+      return;
+    }
+
+    if (!transactionsQuery.data) {
+      return;
+    }
+
+    const total = transactionsQuery.data.meta.total;
+
+    showToast({
+      type: 'success',
+      title: 'Filtros aplicados',
+      message:
+        total === 1
+          ? `${pendingFilterToastMessage} 1 transacao encontrada.`
+          : `${pendingFilterToastMessage} ${total} transacoes encontradas.`,
+    });
+    setPendingFilterToastMessage(null);
+  }, [
+    pendingFilterToastMessage,
+    showToast,
+    transactionsQuery.data,
+    transactionsQuery.error,
+    transactionsQuery.isError,
+    transactionsQuery.isFetching,
+  ]);
+
   const onSubmit = form.handleSubmit(async (values) => {
     resetMutationFeedback();
     form.clearErrors('root');
@@ -173,33 +214,72 @@ export function useTransactionsPage() {
           id: values.transactionId,
           values: payload,
         });
+        showToast({
+          type: 'success',
+          title: 'Transacao atualizada',
+          message: 'As alteracoes foram salvas com sucesso.',
+        });
       } else {
         await createTransactionMutation.mutateAsync(payload);
+        showToast({
+          type: 'success',
+          title: 'Transacao criada',
+          message: 'O lancamento foi registrado com sucesso.',
+        });
       }
 
       resetForm();
       await refreshTransactions();
     } catch (error) {
+      const message = getApiErrorMessage(
+        error,
+        values.transactionId
+          ? 'Nao foi possivel atualizar a transacao agora.'
+          : 'Nao foi possivel criar a transacao agora.',
+      );
+
+      showToast({
+        type: 'error',
+        title: values.transactionId
+          ? 'Falha ao atualizar transacao'
+          : 'Falha ao criar transacao',
+        message,
+      });
+
       form.setError('root', {
-        message: getApiErrorMessage(
-          error,
-          values.transactionId
-            ? 'Nao foi possivel atualizar a transacao agora.'
-            : 'Nao foi possivel criar a transacao agora.',
-        ),
+        message,
       });
     }
   });
 
   const onApplyFilters = filtersForm.handleSubmit((values) => {
-    setAppliedFilters({
+    const nextFilters = {
       page: 1,
       perPage: DEFAULT_PER_PAGE,
       type: values.type || undefined,
       categoryId: values.categoryId || undefined,
       startDate: values.startDate || undefined,
       endDate: values.endDate || undefined,
-    });
+    };
+
+    setAppliedFilters(nextFilters);
+
+    const filterDetails = [
+      nextFilters.type
+        ? `tipo: ${nextFilters.type === 'INCOME' ? 'entrada' : 'saida'}`
+        : null,
+      nextFilters.categoryId ? 'categoria selecionada' : null,
+      nextFilters.startDate ? `de ${nextFilters.startDate}` : null,
+      nextFilters.endDate ? `ate ${nextFilters.endDate}` : null,
+    ]
+      .filter(Boolean)
+      .join(', ');
+
+    setPendingFilterToastMessage(
+      filterDetails.length > 0
+        ? `Busca atualizada com ${filterDetails}.`
+        : 'A listagem foi atualizada com todos os registros.',
+    );
   });
 
   function handleEdit(transaction: Transaction) {
@@ -215,7 +295,26 @@ export function useTransactionsPage() {
     });
   }
 
-  async function handleDelete(transaction: Transaction) {
+  function handleRequestDelete(transaction: Transaction) {
+    resetMutationFeedback();
+    setTransactionPendingDelete(transaction);
+  }
+
+  function handleCancelDelete() {
+    if (deleteTransactionMutation.isPending) {
+      return;
+    }
+
+    setTransactionPendingDelete(null);
+  }
+
+  async function handleConfirmDelete() {
+    const transaction = transactionPendingDelete;
+
+    if (!transaction) {
+      return;
+    }
+
     resetMutationFeedback();
     form.clearErrors('root');
 
@@ -227,8 +326,21 @@ export function useTransactionsPage() {
       }
 
       await refreshTransactions();
-    } catch {
-      // Error feedback is rendered from the mutation state.
+      showToast({
+        type: 'success',
+        title: 'Transacao excluida',
+        message: `"${transaction.description}" foi removida com sucesso.`,
+      });
+      setTransactionPendingDelete(null);
+    } catch (error) {
+      showToast({
+        type: 'error',
+        title: 'Falha ao excluir transacao',
+        message: getApiErrorMessage(
+          error,
+          'Nao foi possivel excluir a transacao agora.',
+        ),
+      });
     }
   }
 
@@ -238,9 +350,15 @@ export function useTransactionsPage() {
   }
 
   function handleClearFilters() {
+    setPendingFilterToastMessage(null);
     filtersForm.clearErrors();
     filtersForm.reset(emptyTransactionFiltersFormValues);
     setAppliedFilters(createDefaultFilters());
+    showToast({
+      type: 'info',
+      title: 'Filtros removidos',
+      message: 'A listagem voltou a considerar todas as transacoes.',
+    });
   }
 
   function handlePreviousPage() {
@@ -284,7 +402,6 @@ export function useTransactionsPage() {
       updateTransactionMutation.isPending,
     isApplyingFilters: transactionsQuery.isFetching,
     deletingTransactionId: deleteTransactionMutation.variables?.id,
-    feedbackMessage,
     listErrorMessage,
     categoryLoadErrorMessage,
     hasActiveFilters: hasActiveFilters(appliedFilters),
@@ -293,15 +410,15 @@ export function useTransactionsPage() {
       categoriesQuery.isLoading ||
       categoriesQuery.isError ||
       categories.length === 0,
-    showFormSuccess:
-      createTransactionMutation.isSuccess ||
-      updateTransactionMutation.isSuccess,
-    showDeleteSuccess: deleteTransactionMutation.isSuccess,
     onSubmit,
     onApplyFilters,
     onEdit: handleEdit,
-    onDelete: handleDelete,
+    onDelete: handleRequestDelete,
     onCancelEdit: handleCancelEdit,
+    transactionPendingDelete,
+    isConfirmingDelete: deleteTransactionMutation.isPending,
+    onCancelDelete: handleCancelDelete,
+    onConfirmDelete: handleConfirmDelete,
     onClearFilters: handleClearFilters,
     onPreviousPage: handlePreviousPage,
     onNextPage: handleNextPage,

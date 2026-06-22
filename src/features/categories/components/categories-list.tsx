@@ -12,7 +12,6 @@ import type { Category } from '@/features/categories/types/category';
 interface CategoriesListProps {
   categories: Category[];
   deletingCategoryId?: string;
-  feedbackMessage?: string;
   onEdit: (category: Category) => void;
   onDelete: (category: Category) => void;
 }
@@ -20,7 +19,6 @@ interface CategoriesListProps {
 export function CategoriesList({
   categories,
   deletingCategoryId,
-  feedbackMessage,
   onEdit,
   onDelete,
 }: CategoriesListProps) {
@@ -34,10 +32,6 @@ export function CategoriesList({
       </CardHeader>
 
       <CardContent>
-        {feedbackMessage ? (
-          <p className="mb-4 text-sm text-primary">{feedbackMessage}</p>
-        ) : null}
-
         {categories.length === 0 ? (
           <EmptyState
             description="Comece por uma sugestao rapida ou crie uma categoria totalmente personalizada."
