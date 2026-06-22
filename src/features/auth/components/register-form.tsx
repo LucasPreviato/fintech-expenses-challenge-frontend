@@ -13,6 +13,7 @@ import {
   type RegisterFormValues,
   registerSchema,
 } from '@/features/auth/lib/auth-schemas';
+import { PasswordRequirements } from '@/features/auth/components/password-requirements';
 import { useAuth } from '@/providers/auth-context';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
@@ -23,6 +24,7 @@ export function RegisterForm() {
   const { register } = useAuth();
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
       email: '',
@@ -30,6 +32,7 @@ export function RegisterForm() {
       confirmPassword: '',
     },
   });
+  const passwordValue = form.watch('password');
 
   const onSubmit = form.handleSubmit(async (values) => {
     form.clearErrors('root');
@@ -87,10 +90,11 @@ export function RegisterForm() {
             <Input
               autoComplete="new-password"
               id="password"
-              placeholder="Minimo de 8 caracteres"
+              placeholder="Use uma senha forte"
               type="password"
               {...form.register('password')}
             />
+            <PasswordRequirements password={passwordValue} />
             <FieldError message={form.formState.errors.password?.message} />
           </div>
 
@@ -110,7 +114,7 @@ export function RegisterForm() {
 
           <Button
             className="w-full"
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || !form.formState.isValid}
             type="submit"
           >
             {form.formState.isSubmitting ? 'Criando conta...' : 'Criar conta'}
