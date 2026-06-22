@@ -2,7 +2,7 @@ import type { CategorySuggestion } from '@/features/categories/types/category';
 
 export const categorySuggestions: CategorySuggestion[] = [
   {
-    name: 'Alimentacao',
+    name: 'Alimentação',
     description: 'Gastos com refeicoes, lanches e compras de mercado.',
     group: 'Do desafio',
   },
@@ -48,11 +48,11 @@ export const categorySuggestions: CategorySuggestion[] = [
   },
   {
     name: 'Equipamentos',
-    description: 'Compra e manutencao de notebooks, acessorios e perifericos.',
+    description: 'Compra e manutenção de notebooks, acessorios e perifericos.',
     group: 'Outras ideias',
   },
   {
-    name: 'Educacao',
+    name: 'Educação e Treinamento',
     description: 'Cursos, certificacoes, livros e treinamentos da equipe.',
     group: 'Outras ideias',
   },

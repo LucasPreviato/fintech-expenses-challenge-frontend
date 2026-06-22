@@ -30,7 +30,7 @@ export function DashboardPage() {
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <p className="text-sm text-muted">
           Acompanhe o saldo consolidado, compare entradas e saidas e veja onde
-          estao concentradas as maiores despesas.
+          estão concentradas as maiores despesas.
         </p>
       </div>
 
@@ -38,6 +38,7 @@ export function DashboardPage() {
         form={form}
         hasActiveFilters={hasActiveFilters}
         isApplyingFilters={isApplyingFilters}
+        periodLabel={periodLabel}
         onApplyFilters={onApplyFilters}
         onClearFilters={onClearFilters}
       />
@@ -53,11 +54,6 @@ export function DashboardPage() {
         <DashboardLoadingState />
       ) : dashboard ? (
         <div className="space-y-6">
-          <div className="rounded-lg border bg-card px-4 py-3 text-sm text-muted">
-            Periodo analisado:{' '}
-            <span className="font-medium text-foreground">{periodLabel}</span>
-          </div>
-
           <DashboardSummaryCards dashboard={dashboard} />
           <DashboardTopExpenseCategories
             categories={dashboard.topExpenseCategories}

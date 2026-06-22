@@ -136,25 +136,25 @@ export function useTransactionsPage() {
   const listErrorMessage = transactionsQuery.isError
     ? getApiErrorMessage(
         transactionsQuery.error,
-        'Nao foi possivel carregar as transacoes agora.',
+        'Não foi possível carregar as transações agora.',
       )
     : deleteTransactionMutation.isError
       ? getApiErrorMessage(
           deleteTransactionMutation.error,
-          'Nao foi possivel excluir a transacao agora.',
+          'Não foi possível excluir a transação agora.',
         )
       : undefined;
 
   const categoryLoadErrorMessage = categoriesQuery.isError
     ? getApiErrorMessage(
         categoriesQuery.error,
-        'Nao foi possivel carregar as categorias agora.',
+        'Não foi possível carregar as categorias agora.',
       )
     : undefined;
   const summaryErrorMessage = dashboardSummaryQuery.isError
     ? getApiErrorMessage(
         dashboardSummaryQuery.error,
-        'Nao foi possivel carregar os indicadores agora.',
+        'Não foi possível carregar os indicadores agora.',
       )
     : undefined;
 
@@ -186,7 +186,7 @@ export function useTransactionsPage() {
         title: 'Falha ao aplicar filtros',
         message: getApiErrorMessage(
           transactionsQuery.error,
-          'Nao foi possivel atualizar a listagem com os filtros informados.',
+          'Não foi possível atualizar a listagem com os filtros informados.',
         ),
       });
       setPendingFilterToastMessage(null);
@@ -204,8 +204,8 @@ export function useTransactionsPage() {
       title: 'Filtros aplicados',
       message:
         total === 1
-          ? `${pendingFilterToastMessage} 1 transacao encontrada.`
-          : `${pendingFilterToastMessage} ${total} transacoes encontradas.`,
+          ? `${pendingFilterToastMessage} 1 transação encontrada.`
+          : `${pendingFilterToastMessage} ${total} transações encontradas.`,
     });
     setPendingFilterToastMessage(null);
   }, [
@@ -238,15 +238,15 @@ export function useTransactionsPage() {
         });
         showToast({
           type: 'success',
-          title: 'Transacao atualizada',
-          message: 'As alteracoes foram salvas com sucesso.',
+          title: 'Transação atualizada',
+          message: 'As alterações foram salvas com sucesso.',
         });
       } else {
         await createTransactionMutation.mutateAsync(payload);
         showToast({
           type: 'success',
-          title: 'Transacao criada',
-          message: 'O lancamento foi registrado com sucesso.',
+          title: 'Transação criada',
+          message: 'O lançamento foi registrado com sucesso.',
         });
       }
 
@@ -257,15 +257,15 @@ export function useTransactionsPage() {
       const message = getApiErrorMessage(
         error,
         values.transactionId
-          ? 'Nao foi possivel atualizar a transacao agora.'
-          : 'Nao foi possivel criar a transacao agora.',
+          ? 'Não foi possível atualizar a transação agora.'
+          : 'Não foi possível criar a transação agora.',
       );
 
       showToast({
         type: 'error',
         title: values.transactionId
-          ? 'Falha ao atualizar transacao'
-          : 'Falha ao criar transacao',
+          ? 'Falha ao atualizar transação'
+          : 'Falha ao criar transação',
         message,
       });
 
@@ -289,11 +289,11 @@ export function useTransactionsPage() {
 
     const filterDetails = [
       nextFilters.type
-        ? `tipo: ${nextFilters.type === 'INCOME' ? 'entrada' : 'saida'}`
+        ? `tipo: ${nextFilters.type === 'INCOME' ? 'entrada' : 'saída'}`
         : null,
       nextFilters.categoryId ? 'categoria selecionada' : null,
       nextFilters.startDate ? `de ${nextFilters.startDate}` : null,
-      nextFilters.endDate ? `ate ${nextFilters.endDate}` : null,
+      nextFilters.endDate ? `até ${nextFilters.endDate}` : null,
     ]
       .filter(Boolean)
       .join(', ');
@@ -352,17 +352,17 @@ export function useTransactionsPage() {
       await refreshTransactions();
       showToast({
         type: 'success',
-        title: 'Transacao excluida',
+        title: 'Transação excluída',
         message: `"${transaction.description}" foi removida com sucesso.`,
       });
       setTransactionPendingDelete(null);
     } catch (error) {
       showToast({
         type: 'error',
-        title: 'Falha ao excluir transacao',
+        title: 'Falha ao excluir transação',
         message: getApiErrorMessage(
           error,
-          'Nao foi possivel excluir a transacao agora.',
+          'Não foi possível excluir a transação agora.',
         ),
       });
     }
@@ -399,7 +399,7 @@ export function useTransactionsPage() {
     showToast({
       type: 'info',
       title: 'Filtros removidos',
-      message: 'A listagem voltou a considerar todas as transacoes.',
+      message: 'A listagem voltou a considerar todas as transações.',
     });
   }
 

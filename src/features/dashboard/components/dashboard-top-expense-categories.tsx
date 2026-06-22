@@ -22,7 +22,7 @@ export function DashboardTopExpenseCategories({
         <CardHeader>
           <CardTitle>Top categorias de saida</CardTitle>
           <CardDescription>
-            As tres categorias com maior volume de despesas no periodo
+            As tres categorias com maior volume de despesas no período
             selecionado.
           </CardDescription>
         </CardHeader>
@@ -30,7 +30,7 @@ export function DashboardTopExpenseCategories({
         <CardContent>
           {categories.length === 0 ? (
             <EmptyState
-              description="Assim que houver saidas registradas no periodo, o ranking aparece aqui."
+              description="Assim que houver saidas registradas no período, o ranking aparece aqui."
               title="Sem categorias para exibir"
             />
           ) : (

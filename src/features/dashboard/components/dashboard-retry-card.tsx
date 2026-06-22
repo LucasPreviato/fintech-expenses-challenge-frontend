@@ -18,7 +18,7 @@ export function DashboardRetryCard({
         </Button>
       }
       description={message}
-      title="Nao foi possivel carregar o dashboard"
+      title="Não foi possivel carregar o dashboard"
     />
   );
 }

@@ -12,7 +12,7 @@ const summaryCards = [
   {
     key: 'totalIncome',
     label: 'Entradas',
-    helper: 'Resumo do periodo',
+    helper: 'Resumo do período',
     icon: ArrowDown,
     iconClassName: 'bg-emerald-50 text-emerald-600',
     amountClassName: 'text-emerald-600',
@@ -20,7 +20,7 @@ const summaryCards = [
   {
     key: 'totalExpense',
     label: 'Saidas',
-    helper: 'Resumo do periodo',
+    helper: 'Resumo do período',
     icon: ArrowUp,
     iconClassName: 'bg-rose-50 text-rose-500',
     amountClassName: 'text-rose-500',

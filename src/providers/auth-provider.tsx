@@ -120,7 +120,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         applyAuthResponse(response);
       } catch (error) {
         throw new Error(
-          getApiErrorMessage(error, 'Nao foi possivel fazer login agora.'),
+          getApiErrorMessage(error, 'Não foi possivel fazer login agora.'),
         );
       }
     },
@@ -139,7 +139,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         applyAuthResponse(response);
       } catch (error) {
         throw new Error(
-          getApiErrorMessage(error, 'Nao foi possivel criar a conta agora.'),
+          getApiErrorMessage(error, 'Não foi possivel criar a conta agora.'),
         );
       }
     },

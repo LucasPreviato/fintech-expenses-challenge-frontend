@@ -6,7 +6,7 @@ export type TransactionType = (typeof transactionTypeValues)[number];
 
 export const transactionTypeLabel: Record<TransactionType, string> = {
   INCOME: 'Entrada',
-  EXPENSE: 'Saida',
+  EXPENSE: 'Saída',
 };
 
 export interface TransactionCategorySummary {

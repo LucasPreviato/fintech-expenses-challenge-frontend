@@ -30,7 +30,7 @@ export function ConfirmDialog({
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/45 px-4">
       <button
-        aria-label="Fechar confirmacao"
+        aria-label="Fechar confirmação"
         className="absolute inset-0"
         disabled={isLoading}
         onClick={onCancel}

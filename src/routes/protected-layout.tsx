@@ -8,7 +8,7 @@ export function ProtectedLayout() {
   if (isBootstrapping) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-100 px-6">
-        <p className="text-sm text-muted">Validando sessao...</p>
+        <p className="text-sm text-muted">Validando sessão...</p>
       </div>
     );
   }

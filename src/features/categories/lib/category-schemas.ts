@@ -10,7 +10,7 @@ export const categoryFormSchema = z.object({
   description: z
     .string()
     .trim()
-    .max(255, 'Use no maximo 255 caracteres na descricao.'),
+    .max(255, 'Use no maximo 255 caracteres na descrição.'),
 });
 
 export type CategoryFormValues = z.infer<typeof categoryFormSchema>;

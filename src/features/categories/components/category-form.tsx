@@ -47,15 +47,15 @@ export function CategoryForm({
           <Label htmlFor="category-name">Nome</Label>
           <Input
             id="category-name"
-            placeholder="Ex.: Alimentacao"
-            type="text"
+            placeholder="Ex.: Alimentação"
+            type="text" 
             {...form.register('name')}
           />
           <FieldError message={form.formState.errors.name?.message} />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="category-description">Descricao</Label>
+          <Label htmlFor="category-description">Descrição</Label>
           <Textarea
             id="category-description"
             placeholder="Descreva quando essa categoria deve ser usada."
@@ -71,7 +71,7 @@ export function CategoryForm({
             type="button"
             variant="secondary"
           >
-            {isEditing ? 'Cancelar edicao' : 'Fechar'}
+            {isEditing ? 'Cancelar edição' : 'Fechar'}
           </Button>
           <Button disabled={isSubmitting} type="submit">
             {isSubmitting

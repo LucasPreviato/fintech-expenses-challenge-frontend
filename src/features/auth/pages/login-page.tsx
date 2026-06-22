@@ -6,7 +6,7 @@ export function LoginPage() {
     <div className="space-y-4">
       <LoginForm />
       <div className="flex items-center justify-center gap-2 text-sm text-muted">
-        <span>Ainda nao tem conta?</span>
+        <span>Ainda não tem conta?</span>
         <Link
           className="font-medium text-primary hover:underline"
           to="/register"

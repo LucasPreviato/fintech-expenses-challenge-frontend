@@ -54,17 +54,16 @@ export function TransactionsPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <h1 className="text-[2.5rem] font-semibold tracking-tight text-foreground">
-            Transacoes
+            Transações
           </h1>
           <p className="text-base text-muted">
-            Registre entradas e saidas, ajuste filtros e acompanhe seus
-            lancamentos por categoria.
+            Registre entradas e saídas, e tome decisões com ajuda de filtros!
           </p>
         </div>
 
         <Button onClick={onOpenCreateDrawer} type="button">
           <CirclePlus className="size-4" />
-          Nova transacao
+          Nova transação
         </Button>
       </div>
 
@@ -82,8 +81,8 @@ export function TransactionsPage() {
 
       {hasSummaryScopeNotice ? (
         <div className="rounded-2xl border border-primary/15 bg-primary/5 px-4 py-3 text-sm text-muted">
-          Os indicadores acima consideram somente o periodo selecionado. Filtros
-          por tipo e categoria afetam a listagem, mas nao alteram os cards de
+          Os indicadores acima consideram somente o período selecionado. Filtros
+          por tipo e categoria afetam a listagem, mas não alteram os cards de
           resumo com a API atual.
         </div>
       ) : null}
@@ -126,12 +125,12 @@ export function TransactionsPage() {
       <Drawer
         description={
           isEditing
-            ? 'Atualize um lancamento existente sem perder o contexto da listagem.'
-            : 'Preencha os dados e registre uma nova movimentacao financeira.'
+            ? 'Atualize um lançamento existente sem perder o contexto da listagem.'
+            : 'Preencha os dados e registre uma nova movimentação financeira.'
         }
         onClose={onCloseFormDrawer}
         open={isFormDrawerOpen}
-        title={isEditing ? 'Editar transacao' : 'Nova transacao'}
+        title={isEditing ? 'Editar transação' : 'Nova transação'}
       >
         <TransactionForm
           categories={categories}
@@ -148,17 +147,17 @@ export function TransactionsPage() {
 
       <ConfirmDialog
         cancelLabel="Voltar"
-        confirmLabel="Excluir transacao"
+        confirmLabel="Excluir transação"
         description={
           transactionPendingDelete
-            ? `A transacao "${transactionPendingDelete.description}" sera removida permanentemente.`
+            ? `A transação "${transactionPendingDelete.description}" será removida permanentemente.`
             : ''
         }
         isLoading={isConfirmingDelete}
         onCancel={onCancelDelete}
         onConfirm={() => void onConfirmDelete()}
         open={Boolean(transactionPendingDelete)}
-        title="Confirmar exclusao"
+        title="Confirmar exclusão"
       />
     </div>
   );

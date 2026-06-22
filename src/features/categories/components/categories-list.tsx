@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -26,15 +25,12 @@ export function CategoriesList({
     <Card>
       <CardHeader>
         <CardTitle>Suas categorias</CardTitle>
-        <CardDescription>
-          Organize as movimentacoes por contextos que facam sentido para voce.
-        </CardDescription>
       </CardHeader>
 
       <CardContent>
         {categories.length === 0 ? (
           <EmptyState
-            description="Comece por uma sugestao rapida ou crie uma categoria totalmente personalizada."
+            description="Comece por uma sugestão rapida ou crie uma categoria totalmente personalizada."
             title="Nenhuma categoria criada ainda"
           />
         ) : (
@@ -52,7 +48,7 @@ export function CategoriesList({
                       {category.name}
                     </h2>
                     <p className="text-sm leading-6 text-muted">
-                      {category.description || 'Sem descricao informada.'}
+                      {category.description || 'Sem descrição informada.'}
                     </p>
                   </div>
 

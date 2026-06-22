@@ -33,9 +33,9 @@ export function CategorySuggestionsPicker({
   return (
     <div className="space-y-4">
       <div className="space-y-1">
-        <p className="text-sm font-medium text-foreground">Sugestoes rapidas</p>
+        <p className="text-sm font-medium text-foreground">Sugestões rápidas</p>
         <p className="text-sm text-muted">
-          Um clique preenche o formulario. A criacao so acontece quando voce
+          Um clique preenche o formulario. A cria so acontece quando voce
           confirmar.
         </p>
       </div>
@@ -56,7 +56,7 @@ export function CategorySuggestionsPicker({
           options={suggestionOptions}
           placeholder={
             suggestionOptions.length > 0
-              ? 'Selecione uma sugestao pronta'
+              ? 'Selecione uma sugestão pronta'
               : 'Todas as sugestoes ja foram adicionadas'
           }
           value=""
