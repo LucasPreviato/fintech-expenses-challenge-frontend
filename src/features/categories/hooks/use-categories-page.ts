@@ -26,6 +26,7 @@ export function useCategoriesPage() {
   const { showToast } = useToast();
   const [categoryPendingDelete, setCategoryPendingDelete] =
     useState<Category | null>(null);
+  const [isFormDrawerOpen, setIsFormDrawerOpen] = useState(false);
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categoryFormSchema),
     defaultValues: emptyCategoryFormValues,
@@ -122,6 +123,7 @@ export function useCategoriesPage() {
       }
 
       resetForm();
+      setIsFormDrawerOpen(false);
       await refreshCategories();
     } catch (error) {
       const message = getApiErrorMessage(
@@ -161,6 +163,7 @@ export function useCategoriesPage() {
   function handleEdit(category: Category) {
     resetMutationFeedback();
     form.clearErrors();
+    setIsFormDrawerOpen(true);
     form.reset({
       categoryId: category.id,
       name: category.name,
@@ -220,12 +223,28 @@ export function useCategoriesPage() {
   function handleCancelEdit() {
     resetMutationFeedback();
     resetForm();
+    setIsFormDrawerOpen(false);
+  }
+
+  function handleOpenCreateDrawer() {
+    resetMutationFeedback();
+    resetForm();
+    setIsFormDrawerOpen(true);
+  }
+
+  function handleCloseFormDrawer() {
+    if (createCategoryMutation.isPending || updateCategoryMutation.isPending) {
+      return;
+    }
+
+    handleCancelEdit();
   }
 
   return {
     form,
     categories,
     isEditing,
+    isFormDrawerOpen,
     isLoading: categoriesQuery.isLoading,
     isSubmitting:
       createCategoryMutation.isPending || updateCategoryMutation.isPending,
@@ -237,6 +256,8 @@ export function useCategoriesPage() {
     onEdit: handleEdit,
     onDelete: handleRequestDelete,
     onCancelEdit: handleCancelEdit,
+    onOpenCreateDrawer: handleOpenCreateDrawer,
+    onCloseFormDrawer: handleCloseFormDrawer,
     categoryPendingDelete,
     isConfirmingDelete: deleteCategoryMutation.isPending,
     onCancelDelete: handleCancelDelete,
