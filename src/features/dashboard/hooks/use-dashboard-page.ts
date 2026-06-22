@@ -37,7 +37,7 @@ export function useDashboardPage() {
   const errorMessage = dashboardQuery.isError
     ? getApiErrorMessage(
         dashboardQuery.error,
-        'Nao foi possivel carregar os indicadores do dashboard agora.',
+        'Não foi possivel carregar os indicadores do dashboard agora.',
       )
     : undefined;
 

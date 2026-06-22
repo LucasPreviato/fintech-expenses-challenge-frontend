@@ -67,12 +67,12 @@ export function useCategoriesPage() {
   const listErrorMessage = categoriesQuery.isError
     ? getApiErrorMessage(
         categoriesQuery.error,
-        'Nao foi possivel carregar as categorias agora.',
+        'Não foi possivel carregar as categorias agora.',
       )
     : deleteCategoryMutation.isError
       ? getApiErrorMessage(
           deleteCategoryMutation.error,
-          'Nao foi possivel excluir a categoria agora.',
+          'Não foi possivel excluir a categoria agora.',
         )
       : undefined;
 
@@ -129,8 +129,8 @@ export function useCategoriesPage() {
       const message = getApiErrorMessage(
         error,
         values.categoryId
-          ? 'Nao foi possivel atualizar a categoria agora.'
-          : 'Nao foi possivel criar a categoria agora.',
+          ? 'Não foi possivel atualizar a categoria agora.'
+          : 'Não foi possivel criar a categoria agora.',
       );
 
       showToast({
@@ -214,7 +214,7 @@ export function useCategoriesPage() {
         title: 'Falha ao excluir categoria',
         message: getApiErrorMessage(
           error,
-          'Nao foi possivel excluir a categoria agora.',
+          'Não foi possivel excluir a categoria agora.',
         ),
       });
     }

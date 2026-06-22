@@ -136,7 +136,7 @@ function ToastCard({ toast, onDismiss }: ToastCardProps) {
         </div>
 
         <Button
-          aria-label="Fechar notificacao"
+          aria-label="Fechar notificação"
           className="h-8 w-8 shrink-0 p-0"
           onClick={onDismiss}
           size="sm"

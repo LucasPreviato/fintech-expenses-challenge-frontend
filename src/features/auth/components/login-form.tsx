@@ -38,7 +38,7 @@ export function LoginForm() {
     } catch (error) {
       form.setError('root', {
         message:
-          error instanceof Error ? error.message : 'Nao foi possivel entrar.',
+          error instanceof Error ? error.message : 'Não foi possivel entrar.',
       });
     }
   });

@@ -7,7 +7,7 @@ export const navigationItems = [
     icon: ChartColumn,
   },
   {
-    label: 'Transacoes',
+    label: 'Transações',
     to: '/transactions',
     icon: ReceiptText,
   },

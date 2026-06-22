@@ -17,6 +17,7 @@ interface DashboardFiltersProps {
   form: UseFormReturn<DashboardFiltersFormValues>;
   hasActiveFilters: boolean;
   isApplyingFilters: boolean;
+  periodLabel?: string;
   onApplyFilters: FormEventHandler<HTMLFormElement>;
   onClearFilters: () => void;
 }
@@ -25,17 +26,24 @@ export function DashboardFilters({
   form,
   hasActiveFilters,
   isApplyingFilters,
+  periodLabel,
   onApplyFilters,
   onClearFilters,
 }: DashboardFiltersProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Periodo</CardTitle>
+        <CardTitle>Período</CardTitle>
         <CardDescription>
           Filtre os indicadores consolidados por intervalo de datas quando
           quiser analisar um recorte especifico.
         </CardDescription>
+        {periodLabel ? (
+          <p className="text-sm text-muted">
+            Período analisado:{' '}
+            <span className="font-medium text-foreground">{periodLabel}</span>
+          </p>
+        ) : null}
       </CardHeader>
 
       <CardContent>

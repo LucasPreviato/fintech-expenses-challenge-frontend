@@ -18,9 +18,9 @@ export function TransactionsRetryCard({
         </Button>
       }
       description={
-        message ?? 'Atualize os dados para tentar carregar a pagina novamente.'
+        message ?? 'Atualize os dados para tentar carregar a página novamente.'
       }
-      title="Nao foi possivel carregar as transacoes"
+      title="Não foi possível carregar as transações"
     />
   );
 }

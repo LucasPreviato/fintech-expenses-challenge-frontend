@@ -70,7 +70,7 @@ export function AppShell({ children }: PropsWithChildren) {
         <header className="border-b border-slate-200/80 bg-white/75 backdrop-blur">
           <div className="flex items-center justify-between gap-4 px-6 py-5 xl:px-10">
             <div className="space-y-0.5">
-              <p className="text-sm font-semibold text-primary">Sessao ativa</p>
+              <p className="text-sm font-semibold text-primary">Sessão ativa</p>
               <p className="text-[1.7rem] font-semibold leading-none text-foreground">
                 {user?.name ?? 'Usuario'}
               </p>

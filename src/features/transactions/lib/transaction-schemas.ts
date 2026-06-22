@@ -4,7 +4,7 @@ import { transactionTypeValues } from '../types/transaction';
 const transactionTypeFieldSchema = z
   .union([z.literal(''), z.enum(transactionTypeValues)])
   .refine((value) => value.length > 0, {
-    message: 'Selecione o tipo da transacao.',
+    message: 'Selecione o tipo da transação.',
   });
 
 const optionalDateFieldSchema = z.union([
@@ -19,8 +19,8 @@ export const transactionFormSchema = z.object({
   description: z
     .string()
     .trim()
-    .min(2, 'Informe ao menos 2 caracteres para a descricao.')
-    .max(255, 'Use no maximo 255 caracteres na descricao.'),
+    .min(2, 'Informe ao menos 2 caracteres para a descrição.')
+    .max(255, 'Use no maximo 255 caracteres na descrição.'),
   amount: z
     .string()
     .trim()

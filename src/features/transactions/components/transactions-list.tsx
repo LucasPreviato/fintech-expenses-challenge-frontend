@@ -47,7 +47,7 @@ export function TransactionsList({
   onPreviousPage,
   onNextPage,
 }: TransactionsListProps) {
-  const totalItems = paginationMeta?.total ?? transactions.length;
+  const totalItems = paginationMeta?.total;
 
   return (
     <section className="space-y-4">
@@ -55,21 +55,19 @@ export function TransactionsList({
         <div className="flex flex-col gap-4 border-b border-slate-200/80 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-1">
             <h2 className="text-[2rem] font-semibold leading-none tracking-tight text-foreground">
-              Suas transacoes
+              Suas transações
             </h2>
-            <p className="text-sm text-muted">
-              Revise os registros e abra o drawer apenas quando precisar criar
-              ou editar.
-            </p>
           </div>
 
           <div className="flex items-center gap-3 self-start lg:self-auto">
-            <p className="text-sm text-muted">
-              {totalItems}{' '}
-              {totalItems === 1
-                ? 'transacao encontrada'
-                : 'transacoes encontradas'}
-            </p>
+            {totalItems !== undefined ? (
+              <p className="text-sm text-muted">
+                {totalItems}{' '}
+                {totalItems === 1
+                  ? 'transação encontrada'
+                  : 'transações encontradas'}
+              </p>
+            ) : null}
             <Button onClick={onRefresh} size="sm" type="button" variant="ghost">
               <RefreshCw className="size-4" />
             </Button>
@@ -86,13 +84,13 @@ export function TransactionsList({
               className="border-border/80 bg-card"
               description={
                 hasActiveFilters
-                  ? 'Tente limpar ou ajustar os filtros para encontrar outras movimentacoes.'
-                  : 'Assim que voce criar o primeiro lancamento, ele aparecera aqui com categoria, tipo e valor.'
+                  ? 'Tente limpar ou ajustar os filtros para encontrar outras movimentações.'
+                  : 'Assim que você criar o primeiro lançamento, ele aparecerá aqui com categoria, tipo e valor.'
               }
               title={
                 hasActiveFilters
-                  ? 'Nenhuma transacao encontrada'
-                  : 'Nenhuma transacao criada ainda'
+                  ? 'Nenhuma transação encontrada'
+                  : 'Nenhuma transação criada ainda'
               }
             />
           </div>
@@ -102,12 +100,12 @@ export function TransactionsList({
               <thead>
                 <tr className="border-b border-slate-200/80 bg-slate-50/75">
                   {[
-                    'Descricao',
+                    'Descrição',
                     'Tipo',
                     'Categoria',
                     'Data',
                     'Valor',
-                    'Acoes',
+                    'Ações',
                   ].map((column) => (
                     <th
                       className="px-6 py-3 text-left text-sm font-semibold text-slate-500"
@@ -194,7 +192,7 @@ export function TransactionsList({
         {paginationMeta && transactions.length > 0 ? (
           <div className="flex flex-col gap-4 border-t border-slate-200/80 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="text-sm text-muted">
-              Pagina {paginationMeta.page} de {paginationMeta.totalPages}
+              Página {paginationMeta.page} de {paginationMeta.totalPages}
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -218,12 +216,12 @@ export function TransactionsList({
                   type="button"
                   variant="secondary"
                 >
-                  Proxima
+                  Próxima
                 </Button>
               </div>
 
               <div className="rounded-xl border border-slate-200 px-3 py-1.5 text-sm text-muted">
-                {paginationMeta.perPage} por pagina
+                {paginationMeta.perPage} por página
               </div>
             </div>
           </div>

@@ -13,9 +13,8 @@ export function AuthShell({ children }: PropsWithChildren) {
               Base pronta para a interface do desafio.
             </h1>
             <p className="text-base leading-7 text-muted">
-              Nesta etapa, o frontend ja nasce com roteamento, formularios,
-              autenticacao real e uma estrutura simples para crescer junto com a
-              API.
+              Plataforma para gestão de movimentação financeira pessoal
+              com foco em simplicidade, usabilidade e performance. Crie sua conta
             </p>
           </div>
         </section>

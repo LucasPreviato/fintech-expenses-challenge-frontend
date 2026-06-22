@@ -46,8 +46,8 @@ export function TransactionForm({
     <div className="space-y-6">
       {!hasCategories && !categoryLoadErrorMessage ? (
         <EmptyState
-          description="Antes do primeiro lancamento, crie ao menos uma categoria para organizar suas movimentacoes."
-          title="Nenhuma categoria disponivel"
+          description="Antes do primeiro lançamento, crie ao menos uma categoria para organizar suas movimentações."
+          title="Nenhuma categoria disponível"
         />
       ) : null}
 
@@ -56,7 +56,7 @@ export function TransactionForm({
         <FieldError message={categoryLoadErrorMessage} />
 
         <div className="space-y-2">
-          <Label htmlFor="transaction-description">Descricao</Label>
+          <Label htmlFor="transaction-description">Descrição</Label>
           <Input
             id="transaction-description"
             placeholder="Ex.: Reembolso de deslocamento"
@@ -157,7 +157,7 @@ export function TransactionForm({
             type="button"
             variant="secondary"
           >
-            {isEditing ? 'Cancelar edicao' : 'Fechar'}
+            {isEditing ? 'Cancelar edição' : 'Fechar'}
           </Button>
           <Button disabled={isSubmitDisabled} type="submit">
             {isSubmitting
@@ -165,8 +165,8 @@ export function TransactionForm({
                 ? 'Salvando...'
                 : 'Criando...'
               : isEditing
-                ? 'Salvar alteracoes'
-                : 'Criar transacao'}
+                ? 'Salvar alterações'
+                : 'Criar transação'}
           </Button>
         </div>
       </form>

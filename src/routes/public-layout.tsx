@@ -9,7 +9,7 @@ export function PublicLayout() {
     return (
       <AuthShell>
         <div className="rounded-xl border bg-card px-6 py-10 text-center">
-          <p className="text-sm text-muted">Validando sessao...</p>
+          <p className="text-sm text-muted">Validando sessão...</p>
         </div>
       </AuthShell>
     );

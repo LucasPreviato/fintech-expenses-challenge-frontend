@@ -44,7 +44,7 @@ export function CategoriesPage() {
             Categorias
           </h1>
           <p className="text-base text-muted">
-            Crie, ajuste e mantenha categorias prontas para organizar suas
+            Faça gestão de suas categorias e organizar suas
             movimentacoes.
           </p>
         </div>
@@ -77,7 +77,7 @@ export function CategoriesPage() {
         description={
           isEditing
             ? 'Atualize uma categoria existente sem sair da listagem atual.'
-            : 'Escolha uma sugestao pronta ou descreva uma categoria personalizada.'
+            : 'Escolha uma sugestão pronta ou descreva uma categoria personalizada.'
         }
         onClose={onCloseFormDrawer}
         open={isFormDrawerOpen}
@@ -108,7 +108,7 @@ export function CategoriesPage() {
         onCancel={onCancelDelete}
         onConfirm={() => void onConfirmDelete()}
         open={Boolean(categoryPendingDelete)}
-        title="Confirmar exclusao"
+        title="Confirmar exclusão"
       />
     </div>
   );
