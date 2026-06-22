@@ -5,9 +5,7 @@ interface CategoriesRetryCardProps {
   onRetry: () => void;
 }
 
-export function CategoriesRetryCard({
-  onRetry,
-}: CategoriesRetryCardProps) {
+export function CategoriesRetryCard({ onRetry }: CategoriesRetryCardProps) {
   return (
     <Card>
       <CardContent className="pt-6">

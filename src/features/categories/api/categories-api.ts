@@ -34,7 +34,10 @@ export async function updateCategory(
   id: string,
   payload: UpdateCategoryRequest,
 ): Promise<Category> {
-  const response = await apiClient.patch<Category>(`/categories/${id}`, payload);
+  const response = await apiClient.patch<Category>(
+    `/categories/${id}`,
+    payload,
+  );
 
   return response.data;
 }

@@ -3,21 +3,18 @@ import {
   login as loginRequest,
   register as registerRequest,
 } from '@/features/auth/api/auth-api';
+import type {
+  LoginFormValues,
+  RegisterFormValues,
+} from '@/features/auth/lib/auth-schemas';
 import {
   clearStoredSession,
   loadStoredSession,
   persistSession,
 } from '@/features/auth/lib/auth-storage';
-import type {
-  LoginFormValues,
-  RegisterFormValues,
-} from '@/features/auth/lib/auth-schemas';
 import type { AuthResponse } from '@/features/auth/types/auth-api';
 import type { AuthSession } from '@/features/auth/types/session';
-import {
-  getApiErrorMessage,
-  setApiClientAccessToken,
-} from '@/lib/api/client';
+import { getApiErrorMessage, setApiClientAccessToken } from '@/lib/api/client';
 import { AuthContext, type AuthContextValue } from '@/providers/auth-context';
 import {
   type PropsWithChildren,
