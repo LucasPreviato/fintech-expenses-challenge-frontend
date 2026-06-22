@@ -23,7 +23,6 @@ interface TransactionFormProps {
   isEditing: boolean;
   isSubmitting: boolean;
   isCategorySelectDisabled: boolean;
-  successMessage?: string;
   categoryLoadErrorMessage?: string;
   onSubmit: FormEventHandler<HTMLFormElement>;
   onCancelEdit: () => void;
@@ -35,7 +34,6 @@ export function TransactionForm({
   isEditing,
   isSubmitting,
   isCategorySelectDisabled,
-  successMessage,
   categoryLoadErrorMessage,
   onSubmit,
   onCancelEdit,
@@ -66,9 +64,6 @@ export function TransactionForm({
         <form className="space-y-4" onSubmit={onSubmit}>
           <FieldError message={form.formState.errors.root?.message} />
           <FieldError message={categoryLoadErrorMessage} />
-          {successMessage ? (
-            <p className="text-sm text-primary">{successMessage}</p>
-          ) : null}
 
           <div className="space-y-2">
             <Label htmlFor="transaction-description">Descricao</Label>

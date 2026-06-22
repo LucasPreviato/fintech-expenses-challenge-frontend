@@ -1,3 +1,4 @@
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { TransactionForm } from '@/features/transactions/components/transaction-form';
 import { TransactionsFilters } from '@/features/transactions/components/transactions-filters';
 import { TransactionsList } from '@/features/transactions/components/transactions-list';
@@ -17,19 +18,20 @@ export function TransactionsPage() {
     isSubmitting,
     isApplyingFilters,
     deletingTransactionId,
-    feedbackMessage,
     listErrorMessage,
     categoryLoadErrorMessage,
     hasActiveFilters,
     hasQueryError,
     isCategorySelectDisabled,
-    showFormSuccess,
-    showDeleteSuccess,
+    transactionPendingDelete,
+    isConfirmingDelete,
     onSubmit,
     onApplyFilters,
     onEdit,
     onDelete,
     onCancelEdit,
+    onCancelDelete,
+    onConfirmDelete,
     onClearFilters,
     onPreviousPage,
     onNextPage,
@@ -72,12 +74,10 @@ export function TransactionsPage() {
             isSubmitting={isSubmitting}
             onCancelEdit={onCancelEdit}
             onSubmit={onSubmit}
-            successMessage={showFormSuccess ? feedbackMessage : undefined}
           />
 
           <TransactionsList
             deletingTransactionId={deletingTransactionId}
-            feedbackMessage={showDeleteSuccess ? feedbackMessage : undefined}
             hasActiveFilters={hasActiveFilters}
             listErrorMessage={listErrorMessage}
             onDelete={onDelete}
@@ -91,6 +91,21 @@ export function TransactionsPage() {
       )}
 
       {hasQueryError ? <TransactionsRetryCard onRetry={onRetry} /> : null}
+
+      <ConfirmDialog
+        cancelLabel="Voltar"
+        confirmLabel="Excluir transacao"
+        description={
+          transactionPendingDelete
+            ? `A transacao "${transactionPendingDelete.description}" sera removida permanentemente.`
+            : ''
+        }
+        isLoading={isConfirmingDelete}
+        onCancel={onCancelDelete}
+        onConfirm={() => void onConfirmDelete()}
+        open={Boolean(transactionPendingDelete)}
+        title="Confirmar exclusao"
+      />
     </div>
   );
 }

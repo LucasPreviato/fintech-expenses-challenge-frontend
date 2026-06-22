@@ -51,7 +51,9 @@ export function RegisterForm() {
     <Card>
       <CardHeader>
         <CardTitle>Criar conta</CardTitle>
-        <CardDescription>Crie sua conta para entrar no sistema.</CardDescription>
+        <CardDescription>
+          Crie sua conta para entrar no sistema.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4" onSubmit={onSubmit}>

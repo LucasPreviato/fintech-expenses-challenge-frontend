@@ -20,7 +20,6 @@ interface CategoryFormProps {
   form: UseFormReturn<CategoryFormValues>;
   isEditing: boolean;
   isSubmitting: boolean;
-  successMessage?: string;
   suggestions: CategorySuggestion[];
   addedSuggestionNames: Set<string>;
   onSuggestionSelect: (suggestion: CategorySuggestion) => void;
@@ -32,7 +31,6 @@ export function CategoryForm({
   form,
   isEditing,
   isSubmitting,
-  successMessage,
   suggestions,
   addedSuggestionNames,
   onSuggestionSelect,
@@ -60,9 +58,6 @@ export function CategoryForm({
 
         <form className="space-y-4" onSubmit={onSubmit}>
           <FieldError message={form.formState.errors.root?.message} />
-          {successMessage ? (
-            <p className="text-sm text-primary">{successMessage}</p>
-          ) : null}
 
           <div className="space-y-2">
             <Label htmlFor="category-name">Nome</Label>
