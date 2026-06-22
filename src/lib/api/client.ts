@@ -7,9 +7,18 @@ export const apiClient = axios.create({
 });
 
 let accessToken: string | null = null;
+const unauthorizedHandlers = new Set<() => void>();
 
 export function setApiClientAccessToken(token: string | null) {
   accessToken = token;
+}
+
+export function onApiUnauthorized(handler: () => void) {
+  unauthorizedHandlers.add(handler);
+
+  return () => {
+    unauthorizedHandlers.delete(handler);
+  };
 }
 
 export function getApiErrorMessage(
@@ -49,3 +58,16 @@ apiClient.interceptors.request.use((config) => {
 
   return config;
 });
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      unauthorizedHandlers.forEach((handler) => {
+        handler();
+      });
+    }
+
+    return Promise.reject(error);
+  },
+);

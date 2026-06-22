@@ -14,7 +14,11 @@ import {
 } from '@/features/auth/lib/auth-storage';
 import type { AuthResponse } from '@/features/auth/types/auth-api';
 import type { AuthSession } from '@/features/auth/types/session';
-import { getApiErrorMessage, setApiClientAccessToken } from '@/lib/api/client';
+import {
+  getApiErrorMessage,
+  onApiUnauthorized,
+  setApiClientAccessToken,
+} from '@/lib/api/client';
 import { AuthContext, type AuthContextValue } from '@/providers/auth-context';
 import {
   type PropsWithChildren,
@@ -65,6 +69,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
     setApiClientAccessToken(null);
     setSession(EMPTY_SESSION);
   }, []);
+
+  useEffect(() => {
+    return onApiUnauthorized(() => {
+      clearSession();
+      setIsBootstrapping(false);
+    });
+  }, [clearSession]);
 
   useEffect(() => {
     const storedSession = loadStoredSession();
