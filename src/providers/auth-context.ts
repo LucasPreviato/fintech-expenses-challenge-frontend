@@ -7,6 +7,7 @@ import { createContext, useContext } from 'react';
 
 export interface AuthContextValue extends AuthSession {
   isAuthenticated: boolean;
+  isBootstrapping: boolean;
   login: (values: LoginFormValues) => Promise<void>;
   register: (values: RegisterFormValues) => Promise<void>;
   logout: () => void;

@@ -16,7 +16,7 @@ export function AppShell({ children }: PropsWithChildren) {
       <aside className="hidden w-64 shrink-0 border-r bg-card lg:flex lg:flex-col">
         <div className="border-b px-6 py-5">
           <p className="text-sm font-medium text-primary">Fintech Expenses</p>
-          <h1 className="mt-1 text-lg font-semibold">Frontend Bootstrap</h1>
+          <h1 className="mt-1 text-lg font-semibold">Painel autenticado</h1>
         </div>
 
         <nav className="flex-1 space-y-1 p-4">
@@ -47,7 +47,7 @@ export function AppShell({ children }: PropsWithChildren) {
         <header className="border-b bg-card">
           <div className="flex items-center justify-between gap-4 px-6 py-4">
             <div>
-              <p className="text-sm text-muted">Ambiente inicial</p>
+              <p className="text-sm text-muted">Sessao ativa</p>
               <p className="text-base font-semibold text-foreground">
                 {user?.name ?? 'Usuario'}
               </p>

@@ -32,20 +32,30 @@ export function RegisterForm() {
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
-    await register(values);
-    await navigate({ to: '/dashboard' });
+    form.clearErrors('root');
+
+    try {
+      await register(values);
+      await navigate({ to: '/dashboard' });
+    } catch (error) {
+      form.setError('root', {
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Nao foi possivel criar a conta.',
+      });
+    }
   });
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Criar conta</CardTitle>
-        <CardDescription>
-          Cadastro local so para destravar o fluxo inicial da interface.
-        </CardDescription>
+        <CardDescription>Crie sua conta para entrar no sistema.</CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4" onSubmit={onSubmit}>
+          <FieldError message={form.formState.errors.root?.message} />
           <div className="space-y-2">
             <Label htmlFor="name">Nome</Label>
             <Input
