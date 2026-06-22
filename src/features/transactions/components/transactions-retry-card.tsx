@@ -1,18 +1,26 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { EmptyState } from '@/components/ui/empty-state';
 
 interface TransactionsRetryCardProps {
+  message?: string;
   onRetry: () => void;
 }
 
-export function TransactionsRetryCard({ onRetry }: TransactionsRetryCardProps) {
+export function TransactionsRetryCard({
+  message,
+  onRetry,
+}: TransactionsRetryCardProps) {
   return (
-    <Card>
-      <CardContent className="pt-6">
+    <EmptyState
+      action={
         <Button onClick={onRetry} type="button">
           Tentar novamente
         </Button>
-      </CardContent>
-    </Card>
+      }
+      description={
+        message ?? 'Atualize os dados para tentar carregar a pagina novamente.'
+      }
+      title="Nao foi possivel carregar as transacoes"
+    />
   );
 }

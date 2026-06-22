@@ -2,6 +2,8 @@ import {
   categoriesQueryKey,
   listCategories,
 } from '@/features/categories/api/categories-api';
+import { getDashboard } from '@/features/dashboard/api/dashboard-api';
+import type { DashboardFilters } from '@/features/dashboard/types/dashboard';
 import { getApiErrorMessage } from '@/lib/api/client';
 import { useToast } from '@/providers/toast-context';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -55,6 +57,13 @@ function createDefaultFilters(): TransactionFilters {
   };
 }
 
+function getDashboardFilters(filters: TransactionFilters): DashboardFilters {
+  return {
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+  };
+}
+
 function hasActiveFilters(filters: TransactionFilters) {
   return Boolean(
     filters.type || filters.categoryId || filters.startDate || filters.endDate,
@@ -69,6 +78,7 @@ export function useTransactionsPage() {
   );
   const [transactionPendingDelete, setTransactionPendingDelete] =
     useState<Transaction | null>(null);
+  const [isFormDrawerOpen, setIsFormDrawerOpen] = useState(false);
   const [pendingFilterToastMessage, setPendingFilterToastMessage] = useState<
     string | null
   >(null);
@@ -86,9 +96,15 @@ export function useTransactionsPage() {
     queryKey: categoriesQueryKey,
     queryFn: listCategories,
   });
+  const dashboardFilters = getDashboardFilters(appliedFilters);
   const transactionsQuery = useQuery({
     queryKey: buildTransactionsQueryKey(appliedFilters),
     queryFn: () => listTransactions(appliedFilters),
+  });
+  const dashboardSummaryQuery = useQuery({
+    queryKey: ['transactions', 'summary', dashboardFilters],
+    // Dashboard cards intentionally reflect period-only filters.
+    queryFn: () => getDashboard(dashboardFilters),
   });
   const createTransactionMutation = useMutation({
     mutationFn: createTransaction,
@@ -133,6 +149,12 @@ export function useTransactionsPage() {
     ? getApiErrorMessage(
         categoriesQuery.error,
         'Nao foi possivel carregar as categorias agora.',
+      )
+    : undefined;
+  const summaryErrorMessage = dashboardSummaryQuery.isError
+    ? getApiErrorMessage(
+        dashboardSummaryQuery.error,
+        'Nao foi possivel carregar os indicadores agora.',
       )
     : undefined;
 
@@ -229,6 +251,7 @@ export function useTransactionsPage() {
       }
 
       resetForm();
+      setIsFormDrawerOpen(false);
       await refreshTransactions();
     } catch (error) {
       const message = getApiErrorMessage(
@@ -285,6 +308,7 @@ export function useTransactionsPage() {
   function handleEdit(transaction: Transaction) {
     resetMutationFeedback();
     form.clearErrors();
+    setIsFormDrawerOpen(true);
     form.reset({
       transactionId: transaction.id,
       description: transaction.description,
@@ -347,6 +371,24 @@ export function useTransactionsPage() {
   function handleCancelEdit() {
     resetMutationFeedback();
     resetForm();
+    setIsFormDrawerOpen(false);
+  }
+
+  function handleOpenCreateDrawer() {
+    resetMutationFeedback();
+    resetForm();
+    setIsFormDrawerOpen(true);
+  }
+
+  function handleCloseFormDrawer() {
+    if (
+      createTransactionMutation.isPending ||
+      updateTransactionMutation.isPending
+    ) {
+      return;
+    }
+
+    handleCancelEdit();
   }
 
   function handleClearFilters() {
@@ -384,7 +426,11 @@ export function useTransactionsPage() {
   }
 
   async function handleRetry() {
-    await Promise.all([transactionsQuery.refetch(), categoriesQuery.refetch()]);
+    await Promise.all([
+      transactionsQuery.refetch(),
+      categoriesQuery.refetch(),
+      dashboardSummaryQuery.refetch(),
+    ]);
   }
 
   return {
@@ -404,17 +450,27 @@ export function useTransactionsPage() {
     deletingTransactionId: deleteTransactionMutation.variables?.id,
     listErrorMessage,
     categoryLoadErrorMessage,
+    summaryDashboard: dashboardSummaryQuery.data,
+    summaryErrorMessage,
+    isSummaryLoading:
+      dashboardSummaryQuery.isLoading && !dashboardSummaryQuery.data,
+    hasSummaryScopeNotice: Boolean(
+      appliedFilters.type || appliedFilters.categoryId,
+    ),
     hasActiveFilters: hasActiveFilters(appliedFilters),
     hasQueryError: transactionsQuery.isError || categoriesQuery.isError,
     isCategorySelectDisabled:
       categoriesQuery.isLoading ||
       categoriesQuery.isError ||
       categories.length === 0,
+    isFormDrawerOpen,
     onSubmit,
     onApplyFilters,
     onEdit: handleEdit,
     onDelete: handleRequestDelete,
     onCancelEdit: handleCancelEdit,
+    onOpenCreateDrawer: handleOpenCreateDrawer,
+    onCloseFormDrawer: handleCloseFormDrawer,
     transactionPendingDelete,
     isConfirmingDelete: deleteTransactionMutation.isPending,
     onCancelDelete: handleCancelDelete,
