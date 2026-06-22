@@ -134,6 +134,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
           name: values.name,
           email: values.email,
           password: values.password,
+          confirmPassword: values.confirmPassword,
         });
 
         applyAuthResponse(response);
