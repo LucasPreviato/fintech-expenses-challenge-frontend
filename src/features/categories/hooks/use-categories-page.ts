@@ -1,268 +1,100 @@
-import {
-  categoriesQueryKey,
-  createCategory,
-  deleteCategory,
-  listCategories,
-  updateCategory,
-} from '@/features/categories/api/categories-api';
-import {
-  type CategoryFormValues,
-  categoryFormSchema,
-  emptyCategoryFormValues,
-} from '@/features/categories/lib/category-schemas';
 import type {
   Category,
   CategorySuggestion,
 } from '@/features/categories/types/category';
-import { getApiErrorMessage } from '@/lib/api/client';
 import { useToast } from '@/providers/toast-context';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useCallback } from 'react';
+import { useCategoriesQueries } from './use-categories-queries';
+import { useCategoryDelete } from './use-category-delete';
+import { useCategoryFormState } from './use-category-form-state';
+import { useCategorySubmit } from './use-category-submit';
 
 export function useCategoriesPage() {
-  const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const [categoryPendingDelete, setCategoryPendingDelete] =
-    useState<Category | null>(null);
-  const [isFormDrawerOpen, setIsFormDrawerOpen] = useState(false);
-  const form = useForm<CategoryFormValues>({
-    resolver: zodResolver(categoryFormSchema),
-    defaultValues: emptyCategoryFormValues,
+  const queriesState = useCategoriesQueries();
+  const formState = useCategoryFormState(queriesState.categories);
+  const submitState = useCategorySubmit({
+    form: formState.form,
+    resetForm: formState.resetForm,
+    closeDrawer: formState.closeDrawer,
+    showToast,
+  });
+  const deleteState = useCategoryDelete({
+    form: formState.form,
+    resetForm: formState.resetForm,
+    showToast,
   });
 
-  const categoriesQuery = useQuery({
-    queryKey: categoriesQueryKey,
-    queryFn: listCategories,
-  });
-  const createCategoryMutation = useMutation({
-    mutationFn: createCategory,
-  });
-  const updateCategoryMutation = useMutation({
-    mutationFn: ({
-      id,
-      values,
-    }: {
-      id: string;
-      values: { name: string; description: string | null };
-    }) => updateCategory(id, values),
-  });
-  const deleteCategoryMutation = useMutation({
-    mutationFn: (category: Category) => deleteCategory(category.id),
-  });
+  const resetMutationFeedback = useCallback(() => {
+    submitState.resetSubmitFeedback();
+    deleteState.resetDeleteFeedback();
+  }, [deleteState.resetDeleteFeedback, submitState.resetSubmitFeedback]);
 
-  const isEditing = Boolean(form.watch('categoryId'));
-  const categories = categoriesQuery.data ?? [];
-  const addedSuggestionNames = useMemo(
-    () =>
-      new Set(
-        categories.map((category) =>
-          category.name.trim().toLocaleLowerCase('pt-BR'),
-        ),
-      ),
-    [categories],
-  );
-
-  const listErrorMessage = categoriesQuery.isError
-    ? getApiErrorMessage(
-        categoriesQuery.error,
-        'Não foi possivel carregar as categorias agora.',
-      )
-    : deleteCategoryMutation.isError
-      ? getApiErrorMessage(
-          deleteCategoryMutation.error,
-          'Não foi possivel excluir a categoria agora.',
-        )
-      : undefined;
-
-  function resetMutationFeedback() {
-    createCategoryMutation.reset();
-    updateCategoryMutation.reset();
-    deleteCategoryMutation.reset();
-  }
-
-  function resetForm() {
-    form.clearErrors();
-    form.reset(emptyCategoryFormValues);
-  }
-
-  async function refreshCategories() {
-    await queryClient.invalidateQueries({
-      queryKey: categoriesQueryKey,
-    });
-  }
-
-  const onSubmit = form.handleSubmit(async (values) => {
+  function onSuggestionSelect(suggestion: CategorySuggestion) {
     resetMutationFeedback();
-    form.clearErrors('root');
-
-    const payload = {
-      name: values.name,
-      description: values.description.length > 0 ? values.description : null,
-    };
-
-    try {
-      if (values.categoryId) {
-        await updateCategoryMutation.mutateAsync({
-          id: values.categoryId,
-          values: payload,
-        });
-        showToast({
-          type: 'success',
-          title: 'Categoria atualizada',
-          message: 'As alteracoes foram salvas com sucesso.',
-        });
-      } else {
-        await createCategoryMutation.mutateAsync(payload);
-        showToast({
-          type: 'success',
-          title: 'Categoria criada',
-          message: 'A nova categoria ja esta disponivel para uso.',
-        });
-      }
-
-      resetForm();
-      setIsFormDrawerOpen(false);
-      await refreshCategories();
-    } catch (error) {
-      const message = getApiErrorMessage(
-        error,
-        values.categoryId
-          ? 'Não foi possivel atualizar a categoria agora.'
-          : 'Não foi possivel criar a categoria agora.',
-      );
-
-      showToast({
-        type: 'error',
-        title: values.categoryId
-          ? 'Falha ao atualizar categoria'
-          : 'Falha ao criar categoria',
-        message,
-      });
-
-      form.setError('root', {
-        message,
-      });
-    }
-  });
-
-  function handleSuggestionSelect(suggestion: CategorySuggestion) {
-    resetMutationFeedback();
-    form.clearErrors();
-    form.setValue('name', suggestion.name, {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-    form.setValue('description', suggestion.description, {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
+    formState.applySuggestion(suggestion);
   }
 
-  function handleEdit(category: Category) {
+  function onEdit(category: Category) {
     resetMutationFeedback();
-    form.clearErrors();
-    setIsFormDrawerOpen(true);
-    form.reset({
-      categoryId: category.id,
-      name: category.name,
-      description: category.description ?? '',
-    });
+    formState.populateForm(category);
   }
 
-  function handleRequestDelete(category: Category) {
+  function onDelete(category: Category) {
     resetMutationFeedback();
-    setCategoryPendingDelete(category);
+    deleteState.requestDelete(category);
   }
 
-  function handleCancelDelete() {
-    if (deleteCategoryMutation.isPending) {
+  function onCancelEdit() {
+    resetMutationFeedback();
+    formState.resetForm();
+    formState.closeDrawer();
+  }
+
+  function onOpenCreateDrawer() {
+    resetMutationFeedback();
+    formState.resetForm();
+    formState.openCreateDrawer();
+  }
+
+  function onCloseFormDrawer() {
+    if (submitState.isSubmitting) {
       return;
     }
 
-    setCategoryPendingDelete(null);
+    onCancelEdit();
   }
 
-  async function handleConfirmDelete() {
-    const category = categoryPendingDelete;
-
-    if (!category) {
+  function onCancelDelete() {
+    if (deleteState.isConfirmingDelete) {
       return;
     }
 
-    resetMutationFeedback();
-    form.clearErrors('root');
-
-    try {
-      await deleteCategoryMutation.mutateAsync(category);
-
-      if (form.getValues('categoryId') === category.id) {
-        resetForm();
-      }
-
-      await refreshCategories();
-      showToast({
-        type: 'success',
-        title: 'Categoria excluida',
-        message: `"${category.name}" foi removida com sucesso.`,
-      });
-      setCategoryPendingDelete(null);
-    } catch (error) {
-      showToast({
-        type: 'error',
-        title: 'Falha ao excluir categoria',
-        message: getApiErrorMessage(
-          error,
-          'Não foi possivel excluir a categoria agora.',
-        ),
-      });
-    }
-  }
-
-  function handleCancelEdit() {
-    resetMutationFeedback();
-    resetForm();
-    setIsFormDrawerOpen(false);
-  }
-
-  function handleOpenCreateDrawer() {
-    resetMutationFeedback();
-    resetForm();
-    setIsFormDrawerOpen(true);
-  }
-
-  function handleCloseFormDrawer() {
-    if (createCategoryMutation.isPending || updateCategoryMutation.isPending) {
-      return;
-    }
-
-    handleCancelEdit();
+    deleteState.clearPendingDelete();
   }
 
   return {
-    form,
-    categories,
-    isEditing,
-    isFormDrawerOpen,
-    isLoading: categoriesQuery.isLoading,
-    isSubmitting:
-      createCategoryMutation.isPending || updateCategoryMutation.isPending,
-    deletingCategoryId: deleteCategoryMutation.variables?.id,
-    listErrorMessage,
-    addedSuggestionNames,
-    onSubmit,
-    onSuggestionSelect: handleSuggestionSelect,
-    onEdit: handleEdit,
-    onDelete: handleRequestDelete,
-    onCancelEdit: handleCancelEdit,
-    onOpenCreateDrawer: handleOpenCreateDrawer,
-    onCloseFormDrawer: handleCloseFormDrawer,
-    categoryPendingDelete,
-    isConfirmingDelete: deleteCategoryMutation.isPending,
-    onCancelDelete: handleCancelDelete,
-    onConfirmDelete: handleConfirmDelete,
-    refetch: categoriesQuery.refetch,
-    hasQueryError: categoriesQuery.isError,
+    form: formState.form,
+    categories: queriesState.categories,
+    isEditing: formState.isEditing,
+    isFormDrawerOpen: formState.isFormDrawerOpen,
+    isLoading: queriesState.isLoading,
+    isSubmitting: submitState.isSubmitting,
+    deletingCategoryId: deleteState.deletingCategoryId,
+    listErrorMessage: queriesState.listErrorMessage ?? deleteState.deleteError,
+    addedSuggestionNames: formState.addedSuggestionNames,
+    onSubmit: submitState.onSubmit,
+    onSuggestionSelect,
+    onEdit,
+    onDelete,
+    onCancelEdit,
+    onOpenCreateDrawer,
+    onCloseFormDrawer,
+    categoryPendingDelete: deleteState.categoryPendingDelete,
+    isConfirmingDelete: deleteState.isConfirmingDelete,
+    onCancelDelete,
+    onConfirmDelete: deleteState.confirmDelete,
+    refetch: queriesState.refetch,
+    hasQueryError: queriesState.hasQueryError,
   };
 }
