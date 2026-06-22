@@ -1,4 +1,6 @@
+import { SelectMenu } from '@/components/ui/select-menu';
 import type { CategorySuggestion } from '@/features/categories/types/category';
+import { useMemo } from 'react';
 
 interface CategorySuggestionsPickerProps {
   suggestions: CategorySuggestion[];
@@ -6,13 +8,28 @@ interface CategorySuggestionsPickerProps {
   onSuggestionSelect: (suggestion: CategorySuggestion) => void;
 }
 
-const suggestionGroups = ['Do desafio', 'Outras ideias'] as const;
-
 export function CategorySuggestionsPicker({
   suggestions,
   addedSuggestionNames,
   onSuggestionSelect,
 }: CategorySuggestionsPickerProps) {
+  const availableSuggestions = useMemo(
+    () =>
+      suggestions.filter(
+        (suggestion) =>
+          !addedSuggestionNames.has(suggestion.name.toLocaleLowerCase('pt-BR')),
+      ),
+    [addedSuggestionNames, suggestions],
+  );
+  const suggestionOptions = useMemo(
+    () =>
+      availableSuggestions.map((suggestion) => ({
+        value: suggestion.name,
+        label: `${suggestion.name} • ${suggestion.group}`,
+      })),
+    [availableSuggestions],
+  );
+
   return (
     <div className="space-y-4">
       <div className="space-y-1">
@@ -23,43 +40,34 @@ export function CategorySuggestionsPicker({
         </p>
       </div>
 
-      <div className="space-y-4">
-        {suggestionGroups.map((group) => {
-          const groupSuggestions = suggestions.filter(
-            (suggestion) => suggestion.group === group,
-          );
+      <div className="space-y-2">
+        <SelectMenu
+          id="category-suggestion"
+          name="categorySuggestion"
+          onChange={(value) => {
+            const suggestion = availableSuggestions.find(
+              (item) => item.name === value,
+            );
 
-          return (
-            <div className="space-y-3" key={group}>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-                {group}
-              </p>
+            if (suggestion) {
+              onSuggestionSelect(suggestion);
+            }
+          }}
+          options={suggestionOptions}
+          placeholder={
+            suggestionOptions.length > 0
+              ? 'Selecione uma sugestao pronta'
+              : 'Todas as sugestoes ja foram adicionadas'
+          }
+          value=""
+          disabled={suggestionOptions.length === 0}
+        />
 
-              <div className="flex flex-wrap gap-2">
-                {groupSuggestions.map((suggestion) => {
-                  const isAdded = addedSuggestionNames.has(
-                    suggestion.name.toLocaleLowerCase('pt-BR'),
-                  );
-
-                  return (
-                    <button
-                      className="rounded-full border px-3 py-2 text-left text-sm transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:border-border disabled:text-muted"
-                      disabled={isAdded}
-                      key={suggestion.name}
-                      onClick={() => onSuggestionSelect(suggestion)}
-                      type="button"
-                    >
-                      <span className="font-medium">{suggestion.name}</span>
-                      <span className="ml-2 text-xs">
-                        {isAdded ? 'Ja adicionada' : 'Usar sugestao'}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
+        {suggestionOptions.length === 0 ? (
+          <p className="text-sm text-muted">
+            Todas as sugestoes disponiveis ja foram usadas nas suas categorias.
+          </p>
+        ) : null}
       </div>
     </div>
   );

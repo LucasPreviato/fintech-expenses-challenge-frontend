@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { Drawer } from '@/components/ui/drawer';
 import { FieldError } from '@/components/ui/field-error';
 import { CategoriesList } from '@/features/categories/components/categories-list';
 import { CategoriesLoadingState } from '@/features/categories/components/categories-loading-state';
@@ -7,12 +8,14 @@ import { CategoriesRetryCard } from '@/features/categories/components/categories
 import { CategoryForm } from '@/features/categories/components/category-form';
 import { useCategoriesPage } from '@/features/categories/hooks/use-categories-page';
 import { categorySuggestions } from '@/features/categories/lib/category-suggestions';
+import { CirclePlus } from 'lucide-react';
 
 export function CategoriesPage() {
   const {
     form,
     categories,
     isEditing,
+    isFormDrawerOpen,
     isLoading,
     isSubmitting,
     deletingCategoryId,
@@ -25,6 +28,8 @@ export function CategoriesPage() {
     onEdit,
     onDelete,
     onCancelEdit,
+    onOpenCreateDrawer,
+    onCloseFormDrawer,
     onCancelDelete,
     onConfirmDelete,
     refetch,
@@ -35,28 +40,20 @@ export function CategoriesPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-2xl font-semibold">Categorias</h1>
-          <p className="text-sm text-muted">
+          <h1 className="text-[2.5rem] font-semibold tracking-tight text-foreground">
+            Categorias
+          </h1>
+          <p className="text-base text-muted">
             Crie, ajuste e mantenha categorias prontas para organizar suas
             movimentacoes.
           </p>
         </div>
 
-        <Button onClick={onCancelEdit} type="button" variant="secondary">
-          {isEditing ? 'Nova categoria' : 'Limpar formulario'}
+        <Button onClick={onOpenCreateDrawer} type="button">
+          <CirclePlus className="size-4" />
+          Nova categoria
         </Button>
       </div>
-
-      <CategoryForm
-        addedSuggestionNames={addedSuggestionNames}
-        form={form}
-        isEditing={isEditing}
-        isSubmitting={isSubmitting}
-        onCancelEdit={onCancelEdit}
-        onSubmit={onSubmit}
-        onSuggestionSelect={onSuggestionSelect}
-        suggestions={categorySuggestions}
-      />
 
       {isLoading ? (
         <CategoriesLoadingState />
@@ -75,6 +72,29 @@ export function CategoriesPage() {
       {hasQueryError ? (
         <CategoriesRetryCard onRetry={() => void refetch()} />
       ) : null}
+
+      <Drawer
+        description={
+          isEditing
+            ? 'Atualize uma categoria existente sem sair da listagem atual.'
+            : 'Escolha uma sugestao pronta ou descreva uma categoria personalizada.'
+        }
+        onClose={onCloseFormDrawer}
+        open={isFormDrawerOpen}
+        title={isEditing ? 'Editar categoria' : 'Nova categoria'}
+      >
+        <CategoryForm
+          addedSuggestionNames={addedSuggestionNames}
+          form={form}
+          isEditing={isEditing}
+          isSubmitting={isSubmitting}
+          onCancelEdit={onCancelEdit}
+          onClose={onCloseFormDrawer}
+          onSubmit={onSubmit}
+          onSuggestionSelect={onSuggestionSelect}
+          suggestions={categorySuggestions}
+        />
+      </Drawer>
 
       <ConfirmDialog
         cancelLabel="Voltar"
