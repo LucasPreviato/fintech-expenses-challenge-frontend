@@ -30,20 +30,28 @@ export function LoginForm() {
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
-    await login(values);
-    await navigate({ to: '/dashboard' });
+    form.clearErrors('root');
+
+    try {
+      await login(values);
+      await navigate({ to: '/dashboard' });
+    } catch (error) {
+      form.setError('root', {
+        message:
+          error instanceof Error ? error.message : 'Nao foi possivel entrar.',
+      });
+    }
   });
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Entrar</CardTitle>
-        <CardDescription>
-          Fluxo inicial sem integracao real com a API.
-        </CardDescription>
+        <CardDescription>Use sua conta para acessar a plataforma.</CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4" onSubmit={onSubmit}>
+          <FieldError message={form.formState.errors.root?.message} />
           <div className="space-y-2">
             <Label htmlFor="email">E-mail</Label>
             <Input

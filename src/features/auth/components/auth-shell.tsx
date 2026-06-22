@@ -14,7 +14,8 @@ export function AuthShell({ children }: PropsWithChildren) {
             </h1>
             <p className="text-base leading-7 text-muted">
               Nesta etapa, o frontend ja nasce com roteamento, formularios,
-              sessao local e uma estrutura simples para crescer junto com a API.
+              autenticacao real e uma estrutura simples para crescer junto com a
+              API.
             </p>
           </div>
         </section>
