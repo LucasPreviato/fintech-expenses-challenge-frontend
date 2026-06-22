@@ -22,13 +22,12 @@ Ja estao prontos:
 - React Query preparado para consumo futuro da API;
 - formularios com `react-hook-form` + `zod`;
 - layout base para areas publicas e autenticadas;
+- autenticacao real integrada com `login`, `register` e `/auth/me`;
+- persistencia de sessao com `localStorage` e revalidacao no bootstrap;
 - placeholders para `dashboard`, `transactions` e `categories`;
-- sessao local simples para destravar o fluxo inicial.
 
 Ainda nao foi implementado nesta etapa:
 
-- integracao real com a API;
-- persistencia definitiva de sessao;
 - CRUDs, filtros e dashboard consumindo endpoints reais.
 
 ## Decisoes de projeto
@@ -99,7 +98,7 @@ pnpm build
 VITE_API_URL=http://localhost:3333
 ```
 
-Essa variavel ja deixa preparado o cliente HTTP para a futura integracao com a API NestJS.
+Essa variavel define a URL base consumida pelo cliente HTTP da autenticacao e das proximas features.
 
 ## Rotas iniciais
 
@@ -111,7 +110,6 @@ Essa variavel ja deixa preparado o cliente HTTP para a futura integracao com a A
 
 ## Proximos passos naturais
 
-- conectar login, cadastro e `/auth/me` com a API;
 - criar camada de servicos para `categories`, `transactions` e `dashboard`;
 - adicionar formularios reais, filtros e paginacao;
 - evoluir feedback de erro e sucesso com notificacoes globais;
